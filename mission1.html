@@ -468,6 +468,10 @@
     game.missions[MISSION_ID].failed = true;
     game.missions[MISSION_ID].completedAt = Date.now();
     saveGame(game);
+
+    alert("시간이 종료되었습니다.\n본 미션은 실패 처리됩니다.\n정답 페이지로 이동합니다.");
+
+    location.href = "mission1_answer.html";
   }
 
   return;
@@ -512,8 +516,7 @@ function useHint() {
   location.href = "mission1_hint.html";
 }
 
-
-   function confirmAnswer() {
+function confirmAnswer() {
   const ok = confirm(
     "정답 보기 버튼 클릭 시 본 미션은 실패하게 됩니다.\n\n" +
     "정답을 확인하시겠습니까?"
@@ -521,8 +524,33 @@ function useHint() {
 
   if (!ok) return;
 
-  failMissionByAnswer();
+  failMissionAndGoAnswer();
 }
+
+function failMissionAndGoAnswer() {
+  let game = getGame();
+
+  if (!game.missions) game.missions = {};
+  if (!game.missions[MISSION_ID]) {
+    game.missions[MISSION_ID] = {
+      startedAt: Date.now(),
+      completedAt: null,
+      hintUsed: false,
+      hintCount: 0,
+      answerViewed: false,
+      failed: false
+    };
+  }
+
+  game.missions[MISSION_ID].answerViewed = true;
+  game.missions[MISSION_ID].failed = true;
+  game.missions[MISSION_ID].completedAt = Date.now();
+
+  saveGame(game);
+
+  location.href = "mission1_answer.html";
+}
+
 
 function failMissionByAnswer() {
   let game = getGame();
