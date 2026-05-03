@@ -4,13 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>미션 1 - 토끼의 발자국을 따라가라</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", Arial, sans-serif;
@@ -32,8 +27,16 @@
       max-width: 480px;
       min-height: 100vh;
       background: linear-gradient(180deg, #fff7e8 0%, #ffffff 45%, #f6f3ff 100%);
-      padding: 20px 18px 120px;
+      padding: 20px 18px 130px;
       box-shadow: 0 0 40px rgba(0,0,0,0.12);
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
     .badge {
@@ -44,17 +47,32 @@
       color: white;
       font-size: 13px;
       font-weight: 700;
-      margin-bottom: 14px;
       box-shadow: 0 8px 18px rgba(255, 143, 61, 0.28);
     }
 
-    .hero {
+    .timer {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #222;
+      color: white;
+      font-size: 14px;
+      font-weight: 900;
+      min-width: 76px;
+      text-align: center;
+    }
+
+    .timer.warning {
+      background: #e63946;
+      animation: pulse 1s infinite;
+    }
+
+    .hero, .card {
       background: white;
       border-radius: 24px;
-      padding: 24px 20px;
+      padding: 22px 20px;
       box-shadow: 0 14px 34px rgba(77, 55, 25, 0.12);
-      border: 1px solid rgba(255, 143, 61, 0.2);
-      margin-bottom: 18px;
+      border: 1px solid rgba(255, 143, 61, 0.16);
+      margin-bottom: 14px;
     }
 
     .emoji {
@@ -75,28 +93,11 @@
       letter-spacing: -0.02em;
     }
 
-    .card {
-      background: white;
-      border-radius: 22px;
-      padding: 20px;
-      margin-bottom: 14px;
-      box-shadow: 0 10px 26px rgba(50, 40, 80, 0.08);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
     .section-title {
       font-size: 18px;
-      font-weight: 800;
+      font-weight: 900;
       margin-bottom: 10px;
       letter-spacing: -0.03em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .story {
-      font-size: 16px;
-      color: #333;
     }
 
     .mission-box {
@@ -104,7 +105,6 @@
       border: 2px dashed #ffb25f;
       border-radius: 18px;
       padding: 16px;
-      margin-top: 10px;
     }
 
     .mission-box strong {
@@ -115,7 +115,6 @@
       list-style: none;
       display: grid;
       gap: 10px;
-      margin-top: 12px;
     }
 
     .steps li {
@@ -138,7 +137,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
+      font-weight: 900;
       font-size: 13px;
     }
 
@@ -146,7 +145,6 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 10px;
     }
 
     .info {
@@ -167,7 +165,7 @@
       font-size: 15px;
     }
 
-    .warning {
+    .warning-card {
       background: #fff0f0;
       border: 1px solid #ffcaca;
       color: #7a2525;
@@ -211,53 +209,10 @@
       transform: scale(0.98);
     }
 
-    .popup {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.42);
-      z-index: 10;
-      justify-content: center;
-      align-items: flex-end;
-      padding: 18px;
-    }
-
-    .popup-content {
-      width: 100%;
-      max-width: 440px;
-      background: white;
-      border-radius: 24px;
-      padding: 22px;
-      animation: slideUp 0.2s ease-out;
-    }
-
-    .popup-content h2 {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-
-    .popup-content p {
-      font-size: 16px;
-      color: #333;
-      margin-bottom: 16px;
-    }
-
-    .close-btn {
-      width: 100%;
-      background: #eee;
-      color: #222;
-      box-shadow: none;
-    }
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
     }
 
     @media (min-width: 768px) {
@@ -277,7 +232,11 @@
 <body>
   <div class="device-bg">
     <main class="page">
-      <div class="badge">MISSION 01 · 토끼카페 앞</div>
+
+      <div class="top-row">
+        <div class="badge">MISSION 01 · 토끼카페 앞</div>
+        <div id="timer" class="timer">07:00</div>
+      </div>
 
       <section class="hero">
         <div class="emoji">🐰🐾</div>
@@ -290,7 +249,7 @@
 
       <section class="card">
         <div class="section-title">📖 스토리</div>
-        <p class="story">
+        <p>
           사라진 강아지는 토끼카페 근처까지 내려왔어요.
           놀란 토끼들이 지하상가 통로를 따라 뛰어가며 발자국을 남겼습니다.
           강아지도 그 흔적을 따라 이동한 것 같아요.
@@ -319,26 +278,14 @@
       <section class="card">
         <div class="section-title">✅ 미션 정보</div>
         <div class="info-grid">
-          <div class="info">
-            <span>예상 시간</span>
-            <b>5~7분</b>
-          </div>
-          <div class="info">
-            <span>난이도</span>
-            <b>⭐☆☆☆☆</b>
-          </div>
-          <div class="info">
-            <span>진행 장소</span>
-            <b>지하상가 통로</b>
-          </div>
-          <div class="info">
-            <span>성공 조건</span>
-            <b>마지막 QR 스캔</b>
-          </div>
+          <div class="info"><span>제한 시간</span><b>7분</b></div>
+          <div class="info"><span>난이도</span><b>⭐☆☆☆☆</b></div>
+          <div class="info"><span>진행 장소</span><b>지하상가 통로</b></div>
+          <div class="info"><span>성공 조건</span><b>마지막 QR 스캔</b></div>
         </div>
       </section>
 
-      <section class="card warning">
+      <section class="card warning-card">
         <div class="section-title">⚠️ 안전 안내</div>
         <p>
           지하상가를 이용하는 다른 고객과 부딪히지 않도록 주의해주세요.
@@ -349,42 +296,39 @@
   </div>
 
   <div class="bottom-actions">
-    <button class="hint-btn" onclick="openPopup('hint')">힌트 보기 🔍</button>
-    <button class="answer-btn" onclick="openPopup('answer')">정답 보기 👀</button>
-  </div>
-
-  <div id="popup" class="popup" onclick="closePopup()">
-    <div class="popup-content" onclick="event.stopPropagation()">
-      <h2 id="popup-title"></h2>
-      <p id="popup-text"></p>
-      <button class="close-btn" onclick="closePopup()">닫기</button>
-    </div>
+    <button class="hint-btn" onclick="location.href='mission1_hint.html'">힌트 보기 🔍</button>
+    <button class="answer-btn" onclick="location.href='mission1_answer.html'">정답 보기 👀</button>
   </div>
 
   <script>
-    function openPopup(type) {
-      const popup = document.getElementById("popup");
-      const title = document.getElementById("popup-title");
-      const text = document.getElementById("popup-text");
+    const MISSION_TIME_MINUTES = 7;
+    let remainingSeconds = MISSION_TIME_MINUTES * 60;
 
-      if (type === "hint") {
-        title.innerText = "🔍 힌트";
-        text.innerText =
-          "토끼카페 앞에서 노란색 토끼 발자국을 찾아보세요. 발자국은 지하상가 통로를 따라 이어져 있습니다.";
+    const timerEl = document.getElementById("timer");
+
+    function updateTimer() {
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+
+      timerEl.textContent =
+        String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+
+      if (remainingSeconds <= 60) {
+        timerEl.classList.add("warning");
       }
 
-      if (type === "answer") {
-        title.innerText = "👀 정답 위치";
-        text.innerText =
-          "마지막 QR코드는 토끼 발자국이 끝나는 지점 근처에 있습니다. 벽면이나 기둥 주변을 확인해보세요.";
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerEl.textContent = "시간 종료";
+        alert("시간이 종료되었습니다. 힌트 또는 정답을 확인하고 다음 단서를 찾아보세요!");
+        return;
       }
 
-      popup.style.display = "flex";
+      remainingSeconds--;
     }
 
-    function closePopup() {
-      document.getElementById("popup").style.display = "none";
-    }
+    updateTimer();
+    const timerInterval = setInterval(updateTimer, 1000);
   </script>
 </body>
 </html>
