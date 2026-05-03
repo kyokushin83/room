@@ -309,6 +309,10 @@
 </head>
 
 <body>
+  <div id="globalTimer" class="fixed-timer">
+  <span style="font-size:11px; display:block; line-height:1;">전체 진행시간</span>
+  <span id="globalTimeValue">00:00</span>
+</div>
   <div class="side-tab" onclick="openPanel()">기록</div>
   <div id="hintMini" class="hint-mini">힌트 2/2</div>
 
@@ -325,7 +329,10 @@
 
       <div class="top-row">
         <div class="badge">MISSION 01 · 토끼카페 앞</div>
-        <div id="timer" class="timer">07:00</div>
+       <div id="timer" class="timer">
+  <span style="font-size:11px; display:block; line-height:1;">본 미션 남은 시간</span>
+  <span id="missionTimeValue">07:00</span>
+</div>
       </div>
 
       <section class="hero">
@@ -461,7 +468,7 @@
       const remaining = endTime - now;
 
       if (remaining <= 0) {
-  timerEl.textContent = "시간 종료";
+  document.getElementById("missionTimeValue").textContent = "시간 종료";
   timerEl.classList.add("warning");
 
   let game = getGame();
@@ -613,6 +620,28 @@ function failMissionAndGoAnswer() {
     updateHintMini();
     updateTimer();
     setInterval(updateTimer, 1000);
+    updateGlobalTimer();
+setInterval(updateGlobalTimer, 1000);
+  function updateGlobalTimer() {
+  const game = getGame();
+
+  if (!game.startedAt) {
+    document.getElementById("globalTimeValue").textContent = "00:00";
+    return;
+  }
+
+  const elapsed = Date.now() - game.startedAt;
+
+  const totalSeconds = Math.floor(elapsed / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  document.getElementById("globalTimeValue").textContent =
+    String(minutes).padStart(2, "0") + ":" +
+    String(seconds).padStart(2, "0");
+}
+  
+  
   </script>
 </body>
 </html>
