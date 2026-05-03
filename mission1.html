@@ -183,6 +183,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      z-index: 15;
     }
 
     button {
@@ -205,8 +206,85 @@
       color: white;
     }
 
-    button:active {
-      transform: scale(0.98);
+    .answer-btn.disabled {
+      background: #c7c7c7;
+      color: #777;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .side-tab {
+      position: fixed;
+      right: 0;
+      top: 42%;
+      transform: translateY(-50%);
+      background: #222;
+      color: white;
+      padding: 12px 8px;
+      border-radius: 14px 0 0 14px;
+      font-size: 13px;
+      font-weight: 900;
+      writing-mode: vertical-rl;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    .hint-mini {
+      position: fixed;
+      right: 0;
+      top: 62%;
+      transform: translateY(-50%);
+      background: #6e5cff;
+      color: white;
+      padding: 12px 8px;
+      border-radius: 14px 0 0 14px;
+      font-size: 13px;
+      font-weight: 900;
+      writing-mode: vertical-rl;
+      z-index: 20;
+    }
+
+    .panel-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 30;
+      justify-content: flex-end;
+    }
+
+    .panel {
+      width: 86%;
+      max-width: 360px;
+      height: 100%;
+      background: white;
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+
+    .panel h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .record-box {
+      background: #f7f7f7;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .close-btn {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      background: #222;
+      color: white;
+      font-weight: 900;
+      margin-top: 12px;
     }
 
     @keyframes pulse {
@@ -230,6 +308,17 @@
 </head>
 
 <body>
+  <div class="side-tab" onclick="openPanel()">기록</div>
+  <div id="hintMini" class="hint-mini">힌트 2/2</div>
+
+  <div id="panelBg" class="panel-bg" onclick="closePanel()">
+    <div class="panel" onclick="event.stopPropagation()">
+      <h2>📋 미션 기록</h2>
+      <div id="recordContent"></div>
+      <button class="close-btn" onclick="closePanel()">닫기</button>
+    </div>
+  </div>
+
   <div class="device-bg">
     <main class="page">
 
@@ -296,39 +385,189 @@
   </div>
 
   <div class="bottom-actions">
-    <button class="hint-btn" onclick="location.href='mission1_hint.html'">힌트 보기 🔍</button>
-    <button class="answer-btn" onclick="location.href='mission1_answer.html'">정답 보기 👀</button>
+    <button class="hint-btn" onclick="useHint()">힌트 보기 🔍</button>
+    <button id="answerBtn" class="answer-btn disabled" onclick="viewAnswer()">정답 보기 🔒</button>
   </div>
 
   <script>
+    const GAME_KEY = "petMissionGame";
+    const TIMER_KEY = "mission1_timer_end";
+    const MISSION_ID = "mission1";
     const MISSION_TIME_MINUTES = 7;
-    let remainingSeconds = MISSION_TIME_MINUTES * 60;
 
+    function createInitialGame() {
+      return {
+        startedAt: Date.now(),
+        totalHintLimit: 2,
+        usedHints: 0,
+        missions: {}
+      };
+    }
+
+    function getGame() {
+      const saved = localStorage.getItem(GAME_KEY);
+      if (!saved) return createInitialGame();
+
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return createInitialGame();
+      }
+    }
+
+    function saveGame(game) {
+      localStorage.setItem(GAME_KEY, JSON.stringify(game));
+    }
+
+    function initMission() {
+      let game = getGame();
+
+      if (!game.startedAt) game.startedAt = Date.now();
+      if (!game.totalHintLimit) game.totalHintLimit = 2;
+      if (typeof game.usedHints !== "number") game.usedHints = 0;
+      if (!game.missions) game.missions = {};
+
+      if (!game.missions[MISSION_ID]) {
+        game.missions[MISSION_ID] = {
+          startedAt: Date.now(),
+          completedAt: null,
+          hintUsed: false,
+          hintCount: 0,
+          answerViewed: false
+        };
+      }
+
+      saveGame(game);
+    }
+
+    function initTimer() {
+      let endTime = localStorage.getItem(TIMER_KEY);
+
+      if (!endTime) {
+        endTime = Date.now() + MISSION_TIME_MINUTES * 60 * 1000;
+        localStorage.setItem(TIMER_KEY, endTime);
+      }
+
+      return Number(endTime);
+    }
+
+    let endTime = initTimer();
     const timerEl = document.getElementById("timer");
+    const answerBtn = document.getElementById("answerBtn");
 
     function updateTimer() {
-      const minutes = Math.floor(remainingSeconds / 60);
-      const seconds = remainingSeconds % 60;
+      const now = Date.now();
+      const remaining = endTime - now;
+
+      if (remaining <= 0) {
+        timerEl.textContent = "시간 종료";
+        timerEl.classList.add("warning");
+        activateAnswer();
+        return;
+      }
+
+      const minutes = Math.floor(remaining / 60000);
+      const seconds = Math.floor((remaining % 60000) / 1000);
 
       timerEl.textContent =
         String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
 
-      if (remainingSeconds <= 60) {
+      if (remaining <= 60000) {
         timerEl.classList.add("warning");
       }
+    }
 
-      if (remainingSeconds <= 0) {
-        clearInterval(timerInterval);
-        timerEl.textContent = "시간 종료";
-        alert("시간이 종료되었습니다. 힌트 또는 정답을 확인하고 다음 단서를 찾아보세요!");
+    function activateAnswer() {
+      answerBtn.classList.remove("disabled");
+      answerBtn.textContent = "정답 보기 👀";
+    }
+
+    function useHint() {
+      let game = getGame();
+      const remainHints = game.totalHintLimit - game.usedHints;
+
+      if (remainHints <= 0) {
+        alert("남은 힌트가 없습니다.");
         return;
       }
 
-      remainingSeconds--;
+      game.usedHints += 1;
+      game.missions[MISSION_ID].hintUsed = true;
+      game.missions[MISSION_ID].hintCount += 1;
+
+      saveGame(game);
+      updateHintMini();
+      location.href = "mission1_hint.html";
     }
 
+    function viewAnswer() {
+      const remaining = endTime - Date.now();
+
+      if (remaining > 0) {
+        alert("정답 보기는 제한 시간이 끝난 뒤 활성화됩니다.");
+        return;
+      }
+
+      let game = getGame();
+      game.missions[MISSION_ID].answerViewed = true;
+      saveGame(game);
+
+      location.href = "mission1_answer.html";
+    }
+
+    function updateHintMini() {
+      const game = getGame();
+      const remainHints = Math.max(0, game.totalHintLimit - game.usedHints);
+      document.getElementById("hintMini").textContent = `힌트 ${remainHints}/${game.totalHintLimit}`;
+    }
+
+    function formatTime(ms) {
+      if (!ms || ms < 0) return "-";
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}분 ${seconds}초`;
+    }
+
+    function renderRecord() {
+      const game = getGame();
+      const mission1 = game.missions.mission1 || {};
+      const totalElapsed = game.startedAt ? Date.now() - game.startedAt : 0;
+      const remainHints = Math.max(0, game.totalHintLimit - game.usedHints);
+
+      document.getElementById("recordContent").innerHTML = `
+        <div class="record-box">
+          <b>전체 진행 시간</b><br />
+          ${formatTime(totalElapsed)}
+        </div>
+        <div class="record-box">
+          <b>힌트</b><br />
+          사용: ${game.usedHints}회 / 최대: ${game.totalHintLimit}회<br />
+          남은 힌트: ${remainHints}회
+        </div>
+        <div class="record-box">
+          <b>미션 1</b><br />
+          상태: ${mission1.completedAt ? "성공 ✅" : "진행 중"}<br />
+          진행 시간: ${mission1.startedAt ? formatTime(Date.now() - mission1.startedAt) : "-"}<br />
+          힌트 사용: ${mission1.hintCount || 0}회<br />
+          정답 보기: ${mission1.answerViewed ? "사용함" : "사용 안 함"}
+        </div>
+      `;
+    }
+
+    function openPanel() {
+      renderRecord();
+      document.getElementById("panelBg").style.display = "flex";
+    }
+
+    function closePanel() {
+      document.getElementById("panelBg").style.display = "none";
+    }
+
+    initMission();
+    updateHintMini();
     updateTimer();
-    const timerInterval = setInterval(updateTimer, 1000);
+    setInterval(updateTimer, 1000);
   </script>
 </body>
 </html>
