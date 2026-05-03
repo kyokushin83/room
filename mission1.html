@@ -205,13 +205,8 @@
       background: #222;
       color: white;
     }
-
-    .answer-btn.disabled {
-      background: #c7c7c7;
-      color: #777;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+<button id="answerBtn" class="answer-btn" onclick="confirmAnswer()">정답 보기 👀</button>
+   
 
     .side-tab {
       position: fixed;
@@ -460,11 +455,23 @@
       const remaining = endTime - now;
 
       if (remaining <= 0) {
-        timerEl.textContent = "시간 종료";
-        timerEl.classList.add("warning");
-        activateAnswer();
-        return;
-      }
+  timerEl.textContent = "시간 종료";
+  timerEl.classList.add("warning");
+
+  let game = getGame();
+
+  if (
+    game.missions &&
+    game.missions[MISSION_ID] &&
+    !game.missions[MISSION_ID].completedAt
+  ) {
+    game.missions[MISSION_ID].failed = true;
+    game.missions[MISSION_ID].completedAt = Date.now();
+    saveGame(game);
+  }
+
+  return;
+}
 
       const minutes = Math.floor(remaining / 60000);
       const seconds = Math.floor((remaining % 60000) / 1000);
@@ -477,43 +484,57 @@
       }
     }
 
-    function activateAnswer() {
-      answerBtn.classList.remove("disabled");
-      answerBtn.textContent = "정답 보기 👀";
-    }
+    
+function useHint() {
+  let game = getGame();
+  const remainHints = game.totalHintLimit - game.usedHints;
 
-    function useHint() {
-      let game = getGame();
-      const remainHints = game.totalHintLimit - game.usedHints;
+  if (remainHints <= 0) {
+    alert("남은 힌트가 없습니다.");
+    return;
+  }
 
-      if (remainHints <= 0) {
-        alert("남은 힌트가 없습니다.");
-        return;
-      }
+  const ok = confirm(
+    `힌트는 전체 ${game.totalHintLimit}회까지만 사용 가능합니다.\n` +
+    `현재 남은 힌트는 ${remainHints}회입니다.\n\n` +
+    `힌트를 사용하시겠습니까?`
+  );
 
-      game.usedHints += 1;
-      game.missions[MISSION_ID].hintUsed = true;
-      game.missions[MISSION_ID].hintCount += 1;
+  if (!ok) return;
 
-      saveGame(game);
-      updateHintMini();
-      location.href = "mission1_hint.html";
-    }
+  game.usedHints += 1;
+  game.missions[MISSION_ID].hintUsed = true;
+  game.missions[MISSION_ID].hintCount += 1;
 
-    function viewAnswer() {
-      const remaining = endTime - Date.now();
+  saveGame(game);
+  updateHintMini();
 
-      if (remaining > 0) {
-        alert("정답 보기는 제한 시간이 끝난 뒤 활성화됩니다.");
-        return;
-      }
+  location.href = "mission1_hint.html";
+}
 
-      let game = getGame();
-      game.missions[MISSION_ID].answerViewed = true;
-      saveGame(game);
 
-      location.href = "mission1_answer.html";
-    }
+   function confirmAnswer() {
+  const ok = confirm(
+    "정답 보기 버튼 클릭 시 본 미션은 실패하게 됩니다.\n\n" +
+    "정답을 확인하시겠습니까?"
+  );
+
+  if (!ok) return;
+
+  failMissionByAnswer();
+}
+
+function failMissionByAnswer() {
+  let game = getGame();
+
+  game.missions[MISSION_ID].answerViewed = true;
+  game.missions[MISSION_ID].failed = true;
+  game.missions[MISSION_ID].completedAt = Date.now();
+
+  saveGame(game);
+
+  location.href = "mission1_answer.html";
+}
 
     function updateHintMini() {
       const game = getGame();
@@ -547,7 +568,7 @@
         </div>
         <div class="record-box">
           <b>미션 1</b><br />
-          상태: ${mission1.completedAt ? "성공 ✅" : "진행 중"}<br />
+          상태: ${mission1.failed ? "실패 ❌" : (mission1.completedAt ? "성공 ✅" : "진행 중")}<br />
           진행 시간: ${mission1.startedAt ? formatTime(Date.now() - mission1.startedAt) : "-"}<br />
           힌트 사용: ${mission1.hintCount || 0}회<br />
           정답 보기: ${mission1.answerViewed ? "사용함" : "사용 안 함"}
