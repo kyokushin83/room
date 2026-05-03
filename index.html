@@ -14,6 +14,22 @@
       min-height: 100vh;
     }
 
+    .fixed-timer {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 50;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #222;
+      color: white;
+      font-size: 14px;
+      font-weight: 900;
+      min-width: 76px;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
     .wrap {
       min-height: 100vh;
       display: flex;
@@ -96,6 +112,21 @@
       z-index: 20;
     }
 
+    .hint-mini {
+      position: fixed;
+      right: 0;
+      top: 62%;
+      transform: translateY(-50%);
+      background: #6e5cff;
+      color: white;
+      padding: 12px 8px;
+      border-radius: 14px 0 0 14px;
+      font-size: 13px;
+      font-weight: 900;
+      writing-mode: vertical-rl;
+      z-index: 20;
+    }
+
     .panel-bg {
       display: none;
       position: fixed;
@@ -140,8 +171,11 @@
     }
   </style>
 </head>
+
 <body>
+  <div id="globalTimer" class="fixed-timer">00:00</div>
   <div class="side-tab" onclick="openPanel()">기록</div>
+  <div id="hintMini" class="hint-mini">힌트 2/2</div>
 
   <div id="panelBg" class="panel-bg" onclick="closePanel()">
     <div class="panel" onclick="event.stopPropagation()">
@@ -177,7 +211,7 @@
 
     function createInitialGame() {
       return {
-        startedAt: Date.now(),
+        startedAt: null,
         totalHintLimit: 2,
         usedHints: 0,
         missions: {}
@@ -214,55 +248,111 @@
         game.usedHints = 0;
       }
 
+      if (!game.missions) {
+        game.missions = {};
+      }
+
       saveGame(game);
+      updateGlobalTimer();
+      updateHintMini();
+
       location.href = "mission1.html";
     }
 
+    function resetGame() {
+      const password = prompt("관리자 비밀번호를 입력하세요.");
 
-  function resetGame() {
-    const password = prompt("관리자 비밀번호를 입력하세요.");
+      if (password !== "1234") {
+        alert("비밀번호가 틀렸습니다.");
+        return;
+      }
 
-    if (password !== "1234") {
-      alert("비밀번호가 틀렸습니다.");
-      return;
+      localStorage.removeItem(GAME_KEY);
+      localStorage.removeItem("mission1_timer_end");
+
+      alert("기록이 초기화되었습니다.");
+
+      updateGlobalTimer();
+      updateHintMini();
+      renderRecord();
     }
 
-    localStorage.removeItem(GAME_KEY);
-    localStorage.removeItem("mission1_timer_end");
-    alert("기록이 초기화되었습니다.");
-    renderRecord();
-  }
-
-
     function formatTime(ms) {
-      if (!ms || ms < 0) return "-";
+      if (!ms || ms < 0) return "00:00";
+
       const totalSeconds = Math.floor(ms / 1000);
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
+
+      return String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    }
+
+    function formatTimeText(ms) {
+      if (!ms || ms < 0) return "-";
+
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+
       return `${minutes}분 ${seconds}초`;
+    }
+
+    function updateGlobalTimer() {
+      const game = getGame();
+
+      if (!game.startedAt) {
+        document.getElementById("globalTimer").textContent = "00:00";
+        return;
+      }
+
+      const elapsed = Date.now() - game.startedAt;
+      document.getElementById("globalTimer").textContent = formatTime(elapsed);
+    }
+
+    function updateHintMini() {
+      const game = getGame();
+      const limit = game.totalHintLimit || 2;
+      const used = typeof game.usedHints === "number" ? game.usedHints : 0;
+      const remainHints = Math.max(0, limit - used);
+
+      document.getElementById("hintMini").textContent = `힌트 ${remainHints}/${limit}`;
     }
 
     function renderRecord() {
       const game = getGame();
-      const mission1 = game.missions.mission1 || {};
+      const mission1 = game.missions?.mission1 || {};
       const totalElapsed = game.startedAt ? Date.now() - game.startedAt : 0;
-      const remainHints = Math.max(0, game.totalHintLimit - game.usedHints);
+      const limit = game.totalHintLimit || 2;
+      const used = typeof game.usedHints === "number" ? game.usedHints : 0;
+      const remainHints = Math.max(0, limit - used);
 
       document.getElementById("recordContent").innerHTML = `
         <div class="record-box">
           <b>전체 진행 시간</b><br />
-          ${formatTime(totalElapsed)}
+          ${game.startedAt ? formatTimeText(totalElapsed) : "아직 시작 전"}
         </div>
+
         <div class="record-box">
           <b>힌트</b><br />
-          사용: ${game.usedHints}회 / 최대: ${game.totalHintLimit}회<br />
+          사용: ${used}회 / 최대: ${limit}회<br />
           남은 힌트: ${remainHints}회
         </div>
+
         <div class="record-box">
           <b>미션 1</b><br />
-          상태: ${mission1.completedAt ? "성공 ✅" : "진행 전 또는 진행 중"}<br />
-          소요 시간: ${mission1.startedAt && mission1.completedAt ? formatTime(mission1.completedAt - mission1.startedAt) : "-"}<br />
-          힌트 사용: ${mission1.hintUsed ? "사용함" : "사용 안 함"}<br />
+          상태: ${
+            mission1.failed
+              ? "실패 ❌"
+              : mission1.completedAt
+                ? "성공 ✅"
+                : "진행 전 또는 진행 중"
+          }<br />
+          소요 시간: ${
+            mission1.startedAt && mission1.completedAt
+              ? formatTimeText(mission1.completedAt - mission1.startedAt)
+              : "-"
+          }<br />
+          힌트 사용: ${mission1.hintCount || 0}회<br />
           정답 보기: ${mission1.answerViewed ? "사용함" : "사용 안 함"}
         </div>
       `;
@@ -276,6 +366,10 @@
     function closePanel() {
       document.getElementById("panelBg").style.display = "none";
     }
+
+    updateGlobalTimer();
+    updateHintMini();
+    setInterval(updateGlobalTimer, 1000);
   </script>
 </body>
 </html>
