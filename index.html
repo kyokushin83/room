@@ -218,12 +218,21 @@
       location.href = "mission1.html";
     }
 
-    function resetGame() {
-      localStorage.removeItem(GAME_KEY);
-      localStorage.removeItem("mission1_timer_end");
-      alert("기록이 초기화되었습니다.");
-      renderRecord();
+
+  function resetGame() {
+    const password = prompt("관리자 비밀번호를 입력하세요.");
+
+    if (password !== "1234") {
+      alert("비밀번호가 틀렸습니다.");
+      return;
     }
+
+    localStorage.removeItem(GAME_KEY);
+    localStorage.removeItem("mission1_timer_end");
+    alert("기록이 초기화되었습니다.");
+    renderRecord();
+  }
+
 
     function formatTime(ms) {
       if (!ms || ms < 0) return "-";
