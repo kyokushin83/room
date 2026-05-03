@@ -9,112 +9,263 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", Arial, sans-serif;
-      background: linear-gradient(180deg, #fff7e8 0%, #ffffff 50%, #f3f6ff 100%);
+      background: #efe9dd;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    .wrap {
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 24px 18px;
     }
 
-    .container {
+    .page {
       width: 100%;
       max-width: 480px;
-      padding: 24px 20px 40px;
+      background: linear-gradient(180deg, #fff7e8 0%, #ffffff 55%, #f3f6ff 100%);
+      border-radius: 30px;
+      padding: 28px 22px 34px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.14);
       text-align: center;
     }
 
-    .card {
-      background: white;
-      border-radius: 28px;
-      padding: 28px 22px 32px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
-    }
-
-    .emoji {
-      font-size: 64px;
-      margin-bottom: 12px;
-    }
+    .emoji { font-size: 64px; margin-bottom: 10px; }
 
     h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
+      font-size: 30px;
       letter-spacing: -0.04em;
+      margin-bottom: 10px;
+      line-height: 1.25;
     }
 
     .desc {
       font-size: 16px;
       color: #555;
-      margin-bottom: 22px;
-      line-height: 1.5;
+      line-height: 1.6;
+      margin-bottom: 18px;
     }
 
     .info {
       background: #f7f7f7;
-      border-radius: 16px;
-      padding: 14px;
+      border-radius: 18px;
+      padding: 16px;
       font-size: 14px;
-      margin-bottom: 20px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .start-btn, .reset-btn {
+      width: 100%;
+      border: none;
+      border-radius: 20px;
+      padding: 17px;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 10px;
     }
 
     .start-btn {
-      width: 100%;
-      padding: 18px;
-      border-radius: 20px;
-      border: none;
-      font-size: 18px;
-      font-weight: 900;
       background: #222;
       color: white;
-      cursor: pointer;
       box-shadow: 0 12px 26px rgba(0,0,0,0.2);
     }
 
-    .start-btn:active {
-      transform: scale(0.97);
+    .reset-btn {
+      background: #eee;
+      color: #222;
     }
 
-    .sub {
-      margin-top: 16px;
+    .side-tab {
+      position: fixed;
+      right: 0;
+      top: 42%;
+      transform: translateY(-50%);
+      background: #222;
+      color: white;
+      padding: 12px 8px;
+      border-radius: 14px 0 0 14px;
       font-size: 13px;
-      color: #888;
+      font-weight: 900;
+      writing-mode: vertical-rl;
+      cursor: pointer;
+      z-index: 20;
     }
 
-    @media (min-width: 768px) {
-      body { align-items: flex-start; padding-top: 40px; }
+    .panel-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 30;
+      justify-content: flex-end;
+    }
+
+    .panel {
+      width: 86%;
+      max-width: 360px;
+      height: 100%;
+      background: white;
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+
+    .panel h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .record-box {
+      background: #f7f7f7;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .close-btn {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      background: #222;
+      color: white;
+      font-weight: 900;
+      margin-top: 12px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
+  <div class="side-tab" onclick="openPanel()">기록</div>
 
+  <div id="panelBg" class="panel-bg" onclick="closePanel()">
+    <div class="panel" onclick="event.stopPropagation()">
+      <h2>📋 미션 기록</h2>
+      <div id="recordContent"></div>
+      <button class="close-btn" onclick="closePanel()">닫기</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <main class="page">
       <div class="emoji">🐶🔍</div>
-
       <h1>펫 미션 시작</h1>
-
       <p class="desc">
         사라진 강아지를 찾기 위한 탐정 미션이 시작됩니다.
         단서를 따라 이동하며 모든 미션을 완료하세요!
       </p>
 
       <div class="info">
-        ⏱ 총 소요 시간: 약 60분<br/>
-        👨‍👩‍👧 가족 / 커플 모두 참여 가능<br/>
-        📍 지하상가 전체 이동형 미션
+        ⏱ 총 예상 시간: 약 60분<br />
+        🎯 미션 1 제한 시간: 7분<br />
+        🔍 전체 힌트 최대 횟수: 2회<br />
+        📍 지하상가 이동형 미션
       </div>
 
-      <button class="start-btn" onclick="startMission()">
-        미션 시작하기 🚀
-      </button>
-
-      <div class="sub">버튼을 누르면 첫 번째 미션으로 이동합니다</div>
-
-    </div>
+      <button class="start-btn" onclick="startGame()">미션 시작하기 🚀</button>
+      <button class="reset-btn" onclick="resetGame()">기록 초기화</button>
+    </main>
   </div>
 
   <script>
-    function startMission() {
-      window.location.href = "mission1.html";
+    const GAME_KEY = "petMissionGame";
+
+    function createInitialGame() {
+      return {
+        startedAt: Date.now(),
+        totalHintLimit: 2,
+        usedHints: 0,
+        missions: {}
+      };
+    }
+
+    function getGame() {
+      const saved = localStorage.getItem(GAME_KEY);
+      if (!saved) return createInitialGame();
+
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return createInitialGame();
+      }
+    }
+
+    function saveGame(game) {
+      localStorage.setItem(GAME_KEY, JSON.stringify(game));
+    }
+
+    function startGame() {
+      let game = getGame();
+
+      if (!game.startedAt) {
+        game.startedAt = Date.now();
+      }
+
+      if (!game.totalHintLimit) {
+        game.totalHintLimit = 2;
+      }
+
+      if (typeof game.usedHints !== "number") {
+        game.usedHints = 0;
+      }
+
+      saveGame(game);
+      location.href = "mission1.html";
+    }
+
+    function resetGame() {
+      localStorage.removeItem(GAME_KEY);
+      localStorage.removeItem("mission1_timer_end");
+      alert("기록이 초기화되었습니다.");
+      renderRecord();
+    }
+
+    function formatTime(ms) {
+      if (!ms || ms < 0) return "-";
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}분 ${seconds}초`;
+    }
+
+    function renderRecord() {
+      const game = getGame();
+      const mission1 = game.missions.mission1 || {};
+      const totalElapsed = game.startedAt ? Date.now() - game.startedAt : 0;
+      const remainHints = Math.max(0, game.totalHintLimit - game.usedHints);
+
+      document.getElementById("recordContent").innerHTML = `
+        <div class="record-box">
+          <b>전체 진행 시간</b><br />
+          ${formatTime(totalElapsed)}
+        </div>
+        <div class="record-box">
+          <b>힌트</b><br />
+          사용: ${game.usedHints}회 / 최대: ${game.totalHintLimit}회<br />
+          남은 힌트: ${remainHints}회
+        </div>
+        <div class="record-box">
+          <b>미션 1</b><br />
+          상태: ${mission1.completedAt ? "성공 ✅" : "진행 전 또는 진행 중"}<br />
+          소요 시간: ${mission1.startedAt && mission1.completedAt ? formatTime(mission1.completedAt - mission1.startedAt) : "-"}<br />
+          힌트 사용: ${mission1.hintUsed ? "사용함" : "사용 안 함"}<br />
+          정답 보기: ${mission1.answerViewed ? "사용함" : "사용 안 함"}
+        </div>
+      `;
+    }
+
+    function openPanel() {
+      renderRecord();
+      document.getElementById("panelBg").style.display = "flex";
+    }
+
+    function closePanel() {
+      document.getElementById("panelBg").style.display = "none";
     }
   </script>
 </body>
