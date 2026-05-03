@@ -50,19 +50,19 @@
       box-shadow: 0 8px 18px rgba(255, 143, 61, 0.28);
     }
 
-   .timer {
+.timer {
   position: fixed;
   top: 12px;
   right: 12px;
   z-index: 50;
 
-  padding: 7px 12px;
-  border-radius: 999px;
+  padding: 10px 14px;
+  border-radius: 14px;
   background: #222;
   color: white;
   font-size: 14px;
   font-weight: 900;
-  min-width: 76px;
+  min-width: 110px;
   text-align: center;
 
   box-shadow: 0 6px 16px rgba(0,0,0,0.25);
@@ -332,10 +332,7 @@
 </head>
 
 <body>
-  <div id="globalTimer" class="fixed-timer">
-  <span style="font-size:11px; display:block; line-height:1;">전체 진행시간</span>
-  <span id="globalTimeValue">00:00</span>
-</div>
+
   <div class="side-tab" onclick="openPanel()">기록</div>
   <div id="hintMini" class="hint-mini">힌트 2/2</div>
 
@@ -352,9 +349,16 @@
 
       <div class="top-row">
         <div class="badge">MISSION 01 · 토끼카페 앞</div>
-       <div id="timer" class="timer">
-  <span style="font-size:11px; display:block; line-height:1;">본 미션 남은 시간</span>
+  <div id="timer" class="timer">
+
+  <span style="font-size:11px; display:block;">본 미션 남은 시간</span>
   <span id="missionTimeValue">07:00</span>
+
+  <span style="font-size:11px; display:block; margin-top:6px; opacity:0.7;">
+    전체 진행시간
+  </span>
+  <span id="globalTimeValue">00:00</span>
+
 </div>
       </div>
 
