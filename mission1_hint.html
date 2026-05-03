@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>미션 1 힌트</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: #efe9dd;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      padding: 22px 18px 32px;
+      background: linear-gradient(180deg, #f7f4ff 0%, #ffffff 55%, #fff8ec 100%);
+      box-shadow: 0 0 40px rgba(0,0,0,0.12);
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #6e5cff;
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 26px;
+      padding: 24px 20px;
+      box-shadow: 0 14px 34px rgba(50, 40, 80, 0.1);
+      margin-bottom: 14px;
+    }
+
+    .emoji {
+      font-size: 52px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.25;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    .hint-box {
+      background: #f1efff;
+      border: 2px dashed #8b7cff;
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 14px;
+      font-size: 17px;
+      font-weight: 800;
+      color: #352899;
+    }
+
+    .image-box {
+      width: 100%;
+      min-height: 180px;
+      border-radius: 20px;
+      background: #eeeeee;
+      border: 2px dashed #cccccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      font-size: 14px;
+      text-align: center;
+      padding: 20px;
+      margin-top: 14px;
+    }
+
+    .guide {
+      background: #fff4df;
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 14px;
+    }
+
+    .guide strong {
+      color: #d45d00;
+    }
+
+    .bottom {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      background: #222;
+      color: white;
+    }
+
+    .answer-btn {
+      background: #ff8f3d;
+      color: white;
+    }
+
+    @media (min-width: 768px) {
+      .wrap { padding: 32px 0; align-items: flex-start; }
+      .page { min-height: auto; border-radius: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="page">
+      <div class="badge">MISSION 01 · HINT</div>
+
+      <section class="card">
+        <div class="emoji">🔍🐰</div>
+        <h1>힌트 보기</h1>
+        <p>
+          토끼 발자국은 아무 곳에나 있지 않아요.
+          토끼카페 앞에서 시작해서 지하상가 통로 방향으로 이어집니다.
+        </p>
+
+        <div class="hint-box">
+          힌트 1. 노란색 토끼 발자국을 찾아보세요.
+        </div>
+
+        <div class="hint-box">
+          힌트 2. 중간에 다른 색 발자국이 보이면 함정일 수 있어요.
+        </div>
+
+        <div class="image-box">
+          여기에 힌트 이미지 넣기<br />
+          예: 발자국 스티커 확대 사진<br />
+          파일명 예시: hint1.jpg
+        </div>
+
+        <div class="guide">
+          <strong>이미지 넣는 방법</strong><br />
+          위 회색 박스를 지우고 아래처럼 바꾸면 됩니다.<br /><br />
+          &lt;img src=\"hint1.jpg\" style=\"width:100%; border-radius:20px;\"&gt;
+        </div>
+      </section>
+
+      <div class="bottom">
+        <button class="back-btn" onclick="location.href='mission1.html'">미션으로 돌아가기</button>
+        <button class="answer-btn" onclick="location.href='mission1_answer.html'">정답 보기</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
