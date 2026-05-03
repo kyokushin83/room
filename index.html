@@ -307,12 +307,12 @@
       const game = getGame();
 
       if (!game.startedAt) {
-        document.getElementById("globalTimer").textContent = "00:00";
+        document.getElementById("timeValue").textContent = "00:00";
         return;
       }
 
       const elapsed = Date.now() - game.startedAt;
-      document.getElementById("globalTimer").textContent = formatTime(elapsed);
+      document.getElementById("timeValue").textContent = formatTime(elapsed);
     }
 
     function updateHintMini() {
