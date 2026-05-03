@@ -205,7 +205,6 @@
       background: #222;
       color: white;
     }
-<button id="answerBtn" class="answer-btn" onclick="confirmAnswer()">정답 보기 👀</button>
    
 
     .side-tab {
@@ -381,7 +380,7 @@
 
   <div class="bottom-actions">
     <button class="hint-btn" onclick="useHint()">힌트 보기 🔍</button>
-    <button id="answerBtn" class="answer-btn disabled" onclick="viewAnswer()">정답 보기 🔒</button>
+    <button id="answerBtn" class="answer-btn" onclick="confirmAnswer()">정답 보기 👀</button>
   </div>
 
   <script>
@@ -448,7 +447,7 @@
 
     let endTime = initTimer();
     const timerEl = document.getElementById("timer");
-    const answerBtn = document.getElementById("answerBtn");
+    
 
     function updateTimer() {
       const now = Date.now();
@@ -552,17 +551,7 @@ function failMissionAndGoAnswer() {
 }
 
 
-function failMissionByAnswer() {
-  let game = getGame();
 
-  game.missions[MISSION_ID].answerViewed = true;
-  game.missions[MISSION_ID].failed = true;
-  game.missions[MISSION_ID].completedAt = Date.now();
-
-  saveGame(game);
-
-  location.href = "mission1_answer.html";
-}
 
     function updateHintMini() {
       const game = getGame();
