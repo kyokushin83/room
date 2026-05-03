@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>미션 1 - 토끼의 발자국을 따라가라</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(180deg, #fff7e8 0%, #ffffff 45%, #f6f3ff 100%);
+      color: #222;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 18px 36px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #ff8f3d;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 18px rgba(255, 143, 61, 0.28);
+    }
+
+    .hero {
+      background: white;
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: 0 14px 34px rgba(77, 55, 25, 0.12);
+      border: 1px solid rgba(255, 143, 61, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .emoji {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.25;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #5b5147;
+      letter-spacing: -0.02em;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 26px rgba(50, 40, 80, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .story {
+      font-size: 16px;
+      color: #333;
+    }
+
+    .mission-box {
+      background: #fff4df;
+      border: 2px dashed #ffb25f;
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    .mission-box strong {
+      color: #d45d00;
+    }
+
+    .steps {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .steps li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #f8f7ff;
+      border-radius: 16px;
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    .num {
+      flex: 0 0 26px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #6e5cff;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .info {
+      background: #f7f7f7;
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .info span {
+      display: block;
+      color: #777;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .info b {
+      font-size: 15px;
+    }
+
+    .warning {
+      background: #fff0f0;
+      border: 1px solid #ffcaca;
+      color: #7a2525;
+    }
+
+    .complete-area {
+      position: sticky;
+      bottom: 0;
+      padding: 12px 0 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0), #ffffff 30%);
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 17px 18px;
+      font-size: 17px;
+      font-weight: 900;
+      background: #222;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .result {
+      display: none;
+      margin-top: 14px;
+      background: #eaffef;
+      border: 1px solid #b8efc5;
+      border-radius: 20px;
+      padding: 18px;
+      color: #124d22;
+      animation: pop 0.25s ease-out;
+    }
+
+    .result h2 {
+      font-size: 21px;
+      margin-bottom: 8px;
+    }
+
+    .next-place {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 16px;
+      background: white;
+      color: #222;
+      font-weight: 800;
+    }
+
+    @keyframes pop {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="badge">MISSION 01 · 토끼카페 앞</div>
+
+    <section class="hero">
+      <div class="emoji">🐰🐾</div>
+      <h1>토끼의 발자국을<br />따라가라!</h1>
+      <p class="subtitle">
+        지하상가 통로에 남겨진 토끼 발자국을 따라가면
+        사라진 강아지의 첫 번째 단서를 찾을 수 있어요.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="section-title">📖 스토리</div>
+      <p class="story">
+        사라진 강아지는 토끼카페 근처까지 내려왔어요.
+        놀란 토끼들이 지하상가 통로를 따라 뛰어가며 발자국을 남겼습니다.
+        강아지도 그 흔적을 따라 이동한 것 같아요.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="section-title">🧩 미션 내용</div>
+      <div class="mission-box">
+        지하상가 바닥 또는 벽면에 있는
+        <strong>토끼 발자국 표시</strong>를 순서대로 따라가세요.
+        마지막 발자국 근처에 있는 QR코드를 찾으면 미션 성공!
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">🚶 참여 방법</div>
+      <ul class="steps">
+        <li><span class="num">1</span><span>토끼카페 앞에서 첫 번째 발자국을 찾습니다.</span></li>
+        <li><span class="num">2</span><span>발자국 방향을 확인하며 천천히 이동합니다.</span></li>
+        <li><span class="num">3</span><span>중간에 나오는 가짜 발자국에 속지 마세요.</span></li>
+        <li><span class="num">4</span><span>마지막 위치에서 QR코드를 스캔합니다.</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="section-title">✅ 미션 정보</div>
+      <div class="info-grid">
+        <div class="info">
+          <span>예상 시간</span>
+          <b>5~7분</b>
+        </div>
+        <div class="info">
+          <span>난이도</span>
+          <b>⭐☆☆☆☆</b>
+        </div>
+        <div class="info">
+          <span>진행 장소</span>
+          <b>지하상가 통로</b>
+        </div>
+        <div class="info">
+          <span>성공 조건</span>
+          <b>QR 스캔</b>
+        </div>
+      </div>
+    </section>
+
+    <section class="card warning">
+      <div class="section-title">⚠️ 안전 안내</div>
+      <p>
+        지하상가를 이용하는 다른 고객과 부딪히지 않도록 주의해주세요.
+        아이들은 반드시 보호자와 함께 이동해주세요.
+      </p>
+    </section>
+
+    <div class="complete-area">
+      <button onclick="completeMission()">QR 스캔 완료 · 단서 확인하기</button>
+      <div id="result" class="result">
+        <h2>🎉 첫 번째 단서 발견!</h2>
+        <p>
+          토끼들이 마지막으로 본 것은 작은 동물 친구들이 있는 방향이었어요.
+          강아지는 다음으로 기니피그 친구들이 있는 장소로 이동한 것 같습니다.
+        </p>
+        <div class="next-place">다음 미션: 기니피그 카페 근처로 이동하세요</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function completeMission() {
+      const result = document.getElementById('result');
+      result.style.display = 'block';
+      result.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  </script>
+</body>
+</html>
