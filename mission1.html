@@ -305,6 +305,29 @@
         border-radius: 32px;
       }
     }
+.fixed-timer {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 50;
+
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #222;
+  color: white;
+  font-size: 14px;
+  font-weight: 900;
+  min-width: 92px;
+  text-align: center;
+
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+
+
+
+
+    
   </style>
 </head>
 
@@ -493,8 +516,8 @@
       const minutes = Math.floor(remaining / 60000);
       const seconds = Math.floor((remaining % 60000) / 1000);
 
-      timerEl.textContent =
-        String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+      document.getElementById("missionTimeValue").textContent =
+  String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
 
       if (remaining <= 60000) {
         timerEl.classList.add("warning");
